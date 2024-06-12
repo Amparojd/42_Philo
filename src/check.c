@@ -6,13 +6,13 @@
 /*   By: ampjimen <ampjimen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 18:48:14 by ampjimen          #+#    #+#             */
-/*   Updated: 2024/06/07 19:36:35 by ampjimen         ###   ########.fr       */
+/*   Updated: 2024/06/12 13:51:59 by ampjimen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	finish_simulation(t_philo *philo)
+static void	end_simulation(t_philo *philo)
 {
 	long	time;
 
@@ -74,7 +74,7 @@ void	*check_death(void *args)
 			time = philo->next_dying_tm;
 			pthread_mutex_unlock(&philo->check_dying_time);
 			if (get_current_time() > time)
-				return (finish_simulation(philo), NULL);
+				return (end_simulation(philo), NULL);
 		}
 		ph_usleep(1);
 	}
