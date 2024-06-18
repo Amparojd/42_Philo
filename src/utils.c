@@ -6,7 +6,7 @@
 /*   By: ampjimen <ampjimen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 18:13:52 by ampjimen          #+#    #+#             */
-/*   Updated: 2024/06/07 19:28:11 by ampjimen         ###   ########.fr       */
+/*   Updated: 2024/06/18 18:01:12 by ampjimen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,22 @@ long	get_current_time(void)
 	return ((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
 }
 
-void	philo_msg(t_philo *philo, enum e_msg mssg, long time)
+void	philo_msg(t_philo *philo, enum e_msg mssg)
 {
+	long	time;
+
 	if (check_finished(philo->environment))
 		return ;
 	pthread_mutex_lock(&philo->environment->msg_mutex);
-	printf(COMMON, time, philo->pos);
+	time = get_current_time() - philo->environment->start_time;
 	if (mssg == FORK)
-		printf(FORK_MSG);
+		printf(COMMON FORK_MSG, time, philo->pos);
 	else if (mssg == EAT)
-		printf(EAT_MSG);
+		printf(COMMON EAT_MSG, time, philo->pos);
 	else if (mssg == SLEEP)
-		printf(SLEEP_MSG);
+		printf(COMMON SLEEP_MSG, time, philo->pos);
 	else if (mssg == THINK)
-		printf(THINK_MSG);
+		printf(COMMON THINK_MSG, time, philo->pos);
 	pthread_mutex_unlock(&philo->environment->msg_mutex);
 }
 
@@ -47,21 +49,38 @@ void	ph_usleep(int time)
 	return ;
 }
 
+static void	waint_until_finish(t_philoenv *data)
+{
+	while (1)
+	{
+		pthread_mutex_lock(&data->finish_program_mutex);
+		if (data->finished)
+		{
+			pthread_mutex_unlock(&data->finish_program_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&data->finish_program_mutex);
+	}
+}
+
 void	free_tasks(t_philoenv *data, t_philo *philos)
 {
 	int	i;
 
 	i = -1;
+	waint_until_finish(data);
 	while (++i < data->num_philos)
 	{
 		pthread_mutex_destroy(&data->forks[i]);
 		pthread_mutex_destroy(&(data->philos[i]).check_dying_time);
-		pthread_mutex_destroy(&(data->philos[i]).check_times_eaten);
 	}
 	pthread_mutex_destroy(&data->msg_mutex);
 	pthread_mutex_destroy(&data->breaker_check);
 	pthread_mutex_destroy(&data->fin_eating_mutex);
+	pthread_mutex_destroy(&data->finish_program_mutex);
+	pthread_mutex_destroy(&data->threads_joined_mutex);
 	free(data->forks);
+	free(data->shared_fork);
 	free(data);
 	free(philos);
 }
