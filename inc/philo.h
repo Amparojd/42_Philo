@@ -6,7 +6,7 @@
 /*   By: ampjimen <ampjimen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/16 20:49:10 by ampjimen          #+#    #+#             */
-/*   Updated: 2024/06/10 20:02:56 by ampjimen         ###   ########.fr       */
+/*   Updated: 2024/06/18 18:14:11 by ampjimen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	flag_empty(int argc, char **argv);
 
 //utils
 void	free_tasks(t_philoenv *data, t_philo *philos);
-void	philo_msg(t_philo *philo, enum e_msg mssg, long time);
+void	philo_msg(t_philo *philo, enum e_msg mssg);
 
 
 //parser
@@ -53,11 +53,13 @@ void	*ph_routines(void *args);
 long	get_current_time(void);
 
 //checks finish tasks
-int	check_finished(t_philoenv *data);
 void	check_finished_eating(t_philoenv *data, t_philo *philo);
+int	check_finished(t_philoenv *data);
 void	*check_death(void *args);
+void	one_philo(t_philoenv *data);
 
-//main
+// main
+
 int	main(int argc, char **argv);
 
 #endif

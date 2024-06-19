@@ -6,7 +6,7 @@
 #    By: ampjimen <ampjimen@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/16 20:49:38 by ampjimen          #+#    #+#              #
-#    Updated: 2024/06/06 19:05:08 by ampjimen         ###   ########.fr        #
+#    Updated: 2024/06/17 18:56:52 by ampjimen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,9 +30,8 @@ SRC = $(addprefix $(SRCS_DIR), $(SRCS))
 OBJS = $(addprefix $(OBJ_DIR), $(OBJ_FILES))
 INCLUDES = $(addprefix $(INC_DIR), $(INC))
 
-SANITIZE = -g3 -fsanitize=address
 GCC = gcc
-CFLAGS = -Wall -Wextra -Werror -pthread -Ofast #-g3 -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror -pthread -Ofast -march=native -g3 -fsanitize=thread
 IFLAGS = -I $(INC_DIR)
 
 RM = rm -f
@@ -57,6 +56,9 @@ READY_MSG :=$(GREEN) "Execute: ./philo " $(EOC)
 
 # Reglas de construcción
 all: obj $(NAME)
+
+$(NAME): $(OBJS)
+	@$(GCC) $(OBJS) $(CFLAGS) -o $(NAME) -pthread
 	@echo $(FUNNY_MSG)
 	@echo $(READY_MSG)
 
@@ -66,8 +68,6 @@ obj:
 $(OBJ_DIR)%.o: $(SRCS_DIR)%.c $(INCLUDES)
 	@$(GCC) $(CFLAGS) $(IFLAGS) -o $@ -c $<
 
-$(NAME): $(OBJS)
-	@$(GCC) $(OBJS) $(CFLAGS) -o $(NAME) -pthread
 
 # Rules valgrind
 valgrind: $(NAME)
@@ -85,3 +85,5 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re valgrind
+
+

@@ -6,7 +6,7 @@
 /*   By: ampjimen <ampjimen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 19:01:09 by ampjimen          #+#    #+#             */
-/*   Updated: 2024/06/10 19:52:51 by ampjimen         ###   ########.fr       */
+/*   Updated: 2024/06/18 17:32:35 by ampjimen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,9 @@ typedef struct s_philo
 	int					times_eaten;
 	int					l_fork;
 	int					r_fork;
+	int					forks;
 	long				next_dying_tm;
 	pthread_mutex_t		check_dying_time;
-	pthread_mutex_t		check_times_eaten;
 	pthread_t			philo_thread;
 	struct philoenv	*environment;
 }	t_philo;
@@ -55,6 +55,11 @@ typedef struct philoenv
 	long			start_time;
 	int				breaker;
 	int				num_fin_eating;
+	int				finished;
+	int				threads_joined;
+	char			*shared_fork;
+	pthread_mutex_t	finish_program_mutex;
+	pthread_mutex_t	threads_joined_mutex;
 	pthread_mutex_t	msg_mutex;
 	pthread_mutex_t	breaker_check;
 	pthread_mutex_t	fin_eating_mutex;
