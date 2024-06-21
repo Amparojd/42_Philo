@@ -6,7 +6,7 @@
 /*   By: ampjimen <ampjimen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 18:49:51 by ampjimen          #+#    #+#             */
-/*   Updated: 2024/06/18 18:13:13 by ampjimen         ###   ########.fr       */
+/*   Updated: 2024/06/21 19:40:57 by ampjimen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,7 @@ void	one_philo(t_philoenv *data)
 {
 	philo_msg(&data->philos[0], FORK);
 	ph_usleep(data->time_to_die);
-	printf(COMMON, data->time_to_die, data->philos[0].pos);
-	printf(DIE_MSG);
+	printf(COMMON DIE_MSG, data->time_to_die, data->philos[0].pos);
 	pthread_mutex_lock(&data->finish_program_mutex);
 	data->finished = 1;
 	pthread_mutex_unlock(&data->finish_program_mutex);
