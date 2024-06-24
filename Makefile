@@ -6,7 +6,7 @@
 #    By: ampjimen <ampjimen@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/16 20:49:38 by ampjimen          #+#    #+#              #
-#    Updated: 2024/06/17 18:56:52 by ampjimen         ###   ########.fr        #
+#    Updated: 2024/06/24 20:06:56 by ampjimen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,6 @@ SRCS = check.c \
         main.c \
         parser.c \
         tasks.c \
-        utils_libft.c \
         utils.c
 
 OBJ_FILES = $(SRCS:.c=.o)
@@ -30,8 +29,12 @@ SRC = $(addprefix $(SRCS_DIR), $(SRCS))
 OBJS = $(addprefix $(OBJ_DIR), $(OBJ_FILES))
 INCLUDES = $(addprefix $(INC_DIR), $(INC))
 
+SANITIZE = -g3 -fsanitize=thread
+SANITIZE1 = -g3 -fsanitize=address
+SANITIZE = -g3
+
 GCC = gcc
-CFLAGS = -Wall -Wextra -Werror -pthread -Ofast -march=native -g3 -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror $(SANITIZE) -pthread -Ofast -march=native -g3
 IFLAGS = -I $(INC_DIR)
 
 RM = rm -f

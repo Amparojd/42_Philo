@@ -6,94 +6,85 @@
 /*   By: ampjimen <ampjimen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/22 18:49:51 by ampjimen          #+#    #+#             */
-/*   Updated: 2024/06/21 19:40:57 by ampjimen         ###   ########.fr       */
+/*   Updated: 2024/06/24 20:12:37 by ampjimen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	release_forks(t_philo *philo, int left, int right)
-{
-	pthread_mutex_lock(&philo->environment->forks[left]);
-	philo->environment->shared_fork[left] = 0;
-	pthread_mutex_unlock(&philo->environment->forks[left]);
-	pthread_mutex_lock(&philo->environment->forks[right]);
-	philo->environment->shared_fork[right] = 0;
-	pthread_mutex_unlock(&philo->environment->forks[right]);
-	philo->forks = 0;
-	check_finished_eating(philo->environment, philo);
+static void ph_eat(t_philo *philo) {
+    t_philoenv *env;
+    long time;
+
+    env = philo->philoenv;
+
+    int left_fork = philo->l_fork;
+    int right_fork = philo->r_fork;
+
+    // Adquirir tenedores en orden ascendente
+    pthread_mutex_lock(&env->forks[left_fork]);
+    pthread_mutex_lock(&env->forks[right_fork]);
+
+    time = get_current_time() - env->start_time;
+    print_msg(philo, FORK, time);
+
+    pthread_mutex_lock(&philo->deadline_mutex);
+    philo->deadline = get_current_time() + philo->philoenv->time_to_die;
+    pthread_mutex_unlock(&philo->deadline_mutex);
+
+    time = get_current_time() - env->start_time;
+    print_msg(philo, EAT, time);
+
+    check_fin_eating(env, philo);
+    ph_usleep(philo->philoenv->time_to_eat);
+    pthread_mutex_unlock(&env->forks[right_fork]);
+    pthread_mutex_unlock(&env->forks[left_fork]);
 }
 
-void	check_fork(t_philo *philo, int pos)
-{
-	pthread_mutex_lock(&philo->environment->forks[pos]);
-	if (philo->environment->shared_fork[pos] == 0)
-	{
-		philo->environment->shared_fork[pos] = 1;
-		philo->forks += 1;
-		philo_msg(philo, FORK);
-	}
-	pthread_mutex_unlock(&philo->environment->forks[pos]);
+
+static void ph_sleep(t_philo *philo) {
+    t_philoenv *env = philo->philoenv;
+    long time;
+
+    int left_fork = philo->l_fork;
+    int right_fork = philo->r_fork;
+
+    if (left_fork < right_fork) {
+        pthread_mutex_unlock(&env->forks[left_fork]);
+        pthread_mutex_unlock(&env->forks[right_fork]);
+    } else {
+        pthread_mutex_unlock(&env->forks[right_fork]);
+        pthread_mutex_unlock(&env->forks[left_fork]);
+    }
+
+    time = get_current_time() - env->start_time;
+    print_msg(philo, SLEEP, time);
+
+    ph_usleep(env->time_to_sleep);
 }
 
-static void	ph_eat(t_philo *philo)
+static void	ph_think(t_philo *philo)
 {
-	int	left;
-	int	right;
+	long	time;
 
-	left = philo->l_fork;
-	right = philo->r_fork;
-	if (philo->pos % 2 == 0)
-	{
-		left = philo->r_fork;
-		right = philo->l_fork;
-	}
-	while (philo->forks != 2 && !check_finished(philo->environment))
-	{
-		check_fork(philo, left);
-		check_fork(philo, right);
-	}
-	pthread_mutex_lock(&philo->check_dying_time);
-	philo->next_dying_tm = get_current_time() + philo->environment->time_to_die;
-	pthread_mutex_unlock(&philo->check_dying_time);
-	philo_msg(philo, EAT);
-	ph_usleep(philo->environment->time_to_eat);
-	release_forks(philo, left, right);
+	time = get_current_time() - philo->philoenv->start_time;
+	print_msg(philo, THINK, time);
 }
 
-void	*ph_routines(void *args)
+void	*routine(void *args)
 {
 	t_philo		*philo;
 	t_philoenv	*env;
-	int			start;
 
 	philo = (t_philo *)args;
-	env = philo->environment;
-	start = 0;
-	while (!start)
-	{
-		pthread_mutex_lock(&env->threads_joined_mutex);
-		start = env->threads_joined;
-		pthread_mutex_unlock(&env->threads_joined_mutex);
-	}
-	if (philo->pos % 2 == 0)
-		ph_usleep(1);
+	env = philo->philoenv;
+	if (philo->id % 2 == 0)
+		ph_usleep(30);
 	while (!check_finished(env))
 	{
 		ph_eat(philo);
-		philo_msg(philo, SLEEP);
-		ph_usleep(philo->environment->time_to_sleep);
-		philo_msg(philo, THINK);
+		ph_sleep(philo);
+		ph_think(philo);
 	}
 	return (0);
-}
-
-void	one_philo(t_philoenv *data)
-{
-	philo_msg(&data->philos[0], FORK);
-	ph_usleep(data->time_to_die);
-	printf(COMMON DIE_MSG, data->time_to_die, data->philos[0].pos);
-	pthread_mutex_lock(&data->finish_program_mutex);
-	data->finished = 1;
-	pthread_mutex_unlock(&data->finish_program_mutex);
 }
