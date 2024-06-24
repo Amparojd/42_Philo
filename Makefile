@@ -6,7 +6,7 @@
 #    By: ampjimen <ampjimen@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/16 20:49:38 by ampjimen          #+#    #+#              #
-#    Updated: 2024/06/24 20:18:16 by ampjimen         ###   ########.fr        #
+#    Updated: 2024/06/24 20:19:31 by ampjimen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,7 +57,6 @@ FUNNY_MSG :=$(RED) "\
 " 
 READY_MSG :=$(GREEN) "Execute: ./philo " $(EOC)
 
-# Reglas de construcción
 all: obj $(NAME)
 
 $(NAME): $(OBJS)
@@ -88,5 +87,3 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re valgrind
-
-
