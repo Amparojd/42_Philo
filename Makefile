@@ -6,7 +6,7 @@
 #    By: ampjimen <ampjimen@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/16 20:49:38 by ampjimen          #+#    #+#              #
-#    Updated: 2024/06/24 20:06:56 by ampjimen         ###   ########.fr        #
+#    Updated: 2024/06/24 20:18:16 by ampjimen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ OBJS = $(addprefix $(OBJ_DIR), $(OBJ_FILES))
 INCLUDES = $(addprefix $(INC_DIR), $(INC))
 
 SANITIZE = -g3 -fsanitize=thread
-SANITIZE1 = -g3 -fsanitize=address
+SANITIZE = -g3 -fsanitize=address
 SANITIZE = -g3
 
 GCC = gcc
